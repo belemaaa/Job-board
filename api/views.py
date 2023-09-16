@@ -57,19 +57,19 @@ class Login(APIView):
             return Response({'error': 'invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SearchJobs(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    def get(self, request):
-        search_query = self.request.query_params.get('q', None)
-        queryset = models.Job.objects.all()
-        if search_query:
-            queryset = queryset.filter(
-                Q(job_name__icontains=search_query) |
-                Q(job_owner__icontains=search_query)
-            )
-        serializer = serializers.JobSerializer(queryset, many=True)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+# class SearchJobs(APIView):
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request):
+#         search_query = self.request.query_params.get('q', None)
+#         queryset = models.Job.objects.all()
+#         if search_query:
+#             queryset = queryset.filter(
+#                 Q(job_name__icontains=search_query) |
+#                 Q(job_owner__icontains=search_query)
+#             )
+#         serializer = serializers.JobSerializer(queryset, many=True)
+#         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
 class CreateGig(APIView):
     authentication_classes = [TokenAuthentication]
@@ -79,12 +79,13 @@ class CreateGig(APIView):
         if serializer.is_valid():
             gig_name = serializer.validated_data.get('gig_name')
             gig_description = serializer.validated_data.get('gig_description')
+            gig_requirements = serializer.validated_data.get('gig_requirements')
 
             serializer.save(user=request.user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-class Seller_Gigs(APIView):
+class Hirer_Gigs(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):

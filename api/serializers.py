@@ -21,13 +21,3 @@ class GigSerializer(serializers.ModelSerializer):
     
     def get_owner_id(self, obj):
         return obj.id
-
-
-class JobSerializer(serializers.ModelSerializer):
-    owner_id = serializers.SerializerMethodField()
-    class Meta:
-        model = models.Job
-        fields = ['owner_id', 'job_name', 'job_description', 'job_requirements']
-
-    def get_owner_id(self, obj):
-        return obj.id
