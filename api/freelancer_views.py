@@ -12,7 +12,18 @@ from django.db.models import Q
 
 
 class FreelancerProfile(APIView):
-    pass
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = serializers.FreelancerSerializer(data=request.data)
+        if serializer.is_valid():
+            field = serializer.validated_data.get('field')
+            qualifications = serializer.validated_data.get('qualifications')
+
+            serializer.save(user=request.user)
+            return Response({'message': 'freelancer has been created'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
