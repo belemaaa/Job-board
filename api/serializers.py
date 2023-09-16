@@ -17,7 +17,12 @@ class GigSerializer(serializers.ModelSerializer):
     owner_id = serializers.SerializerMethodField()
     class Meta:
         model = models.Gig
-        fields = ['owner_id', 'gig_name', 'gig_description']
+        fields = ['owner_id', 'gig_name', 'gig_description', 'gig_requirements']
     
     def get_owner_id(self, obj):
         return obj.id
+
+class FreelancerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Freelancer
+        fields = ['user', 'field', 'qualifications']

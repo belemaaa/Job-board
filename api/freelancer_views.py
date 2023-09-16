@@ -10,6 +10,10 @@ from functools import reduce
 from operator import or_
 from django.db.models import Q
 
+
+class FreelancerProfile(APIView):
+    pass
+
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
