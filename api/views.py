@@ -8,6 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+import secrets
+from django.core.mail import send_mail
+from functools import reduce
+from operator import or_
+from django.db.models import Q
 
 class Signup(APIView):
     authentication_classes = []
@@ -25,6 +30,7 @@ class Signup(APIView):
             user_exists = models.User.objects.filter(username=username)
             if user_exists:
                 return Response({'error': 'user with this username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            # send mail...
             serializer.save(password = hashed_password)
             return Response({'message': 'signup successful'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -45,8 +51,22 @@ class Login(APIView):
                 token = Token.objects.get_or_create(user=user)
                 return Response({
                     'message': 'login successful',
-                    'access_token': token.key
+                    'access_token': token.key,
+                    'user_id': user.id
                 }, status=status.HTTP_200_OK)
             return Response({'error': 'invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class SearchJobs(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        search_query = self.request.query_params.get('q', None)
+        queryset = models.Job.objects.all()
+        if search_query:
+            queryset = queryset.filter(
+                Q(job_name__icontains=search_query) |
+                Q(job_owner__icontains=search_query)
+            )
+        serializer = serializers.JobSerializer(queryset, many=True)
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)

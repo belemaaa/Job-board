@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    confirmation_code = models.CharField(max_length=6)
     def __str__(self):
         return self.username
     
