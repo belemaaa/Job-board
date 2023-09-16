@@ -72,8 +72,8 @@ class SearchJobs(APIView):
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
 class CreateGig(APIView):
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = serializers.GigSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,3 +82,33 @@ class CreateGig(APIView):
 
             serializer.save(user=request.user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
+
+class Seller_Gigs(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        queryset = models.Gig.objects.filter(user=user)
+        serializer = serializers.GigSerializer(queryset, many=True)
+
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
+    def put(self, request, gig_id):
+        try:
+            instance = models.Gig.objects.get(id=gig_id)
+            serializer = serializers.GigSerializer(instance, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Gig has been updated.', 'data': serializer.data}, status=status.HTTP_200_OK)
+        except models.Gig.DoesNotExist:
+            return Response({'error': 'Gig not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class GetAllGigs(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        queryset = models.Gig.objects.all()
+        serializer = serializers.GigSerializer(queryset, many=True)
+
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
