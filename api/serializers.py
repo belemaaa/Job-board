@@ -14,12 +14,20 @@ class LoginSerializer(serializers.Serializer):
 
 
 class GigSerializer(serializers.ModelSerializer):
+    owner_id = serializers.SerializerMethodField()
     class Meta:
         model = models.Gig
-        fields = ['gig_owner', 'gig_name', 'gig_description']
+        fields = ['owner_id', 'gig_name', 'gig_description']
+    
+    def get_owner_id(self, obj):
+        return obj.id
 
 
 class JobSerializer(serializers.ModelSerializer):
+    owner_id = serializers.SerializerMethodField()
     class Meta:
         model = models.Job
-        fields = ['job_owner', 'job_name', 'job_description', 'job_requirements']
+        fields = ['owner_id', 'job_name', 'job_description', 'job_requirements']
+
+    def get_owner_id(self, obj):
+        return obj.id

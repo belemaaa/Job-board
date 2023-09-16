@@ -70,3 +70,15 @@ class SearchJobs(APIView):
             )
         serializer = serializers.JobSerializer(queryset, many=True)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
+class CreateGig(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def post(self, request):
+        serializer = serializers.GigSerializer(data=request.data)
+        if serializer.is_valid():
+            gig_name = serializer.validated_data.get('gig_name')
+            gig_description = serializer.validated_data.get('gig_description')
+
+            serializer.save(user=request.user)
+            return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
