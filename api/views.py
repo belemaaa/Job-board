@@ -82,6 +82,7 @@ class CreateGig(APIView):
 
             serializer.save(user=request.user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class Seller_Gigs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -90,9 +91,8 @@ class Seller_Gigs(APIView):
         user = request.user
         queryset = models.Gig.objects.filter(user=user)
         serializer = serializers.GigSerializer(queryset, many=True)
-
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-    
+     
     def put(self, request, gig_id):
         try:
             instance = models.Gig.objects.get(id=gig_id)
@@ -107,8 +107,8 @@ class GetAllGigs(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        queryset = models.Gig.objects.all()
-        serializer = serializers.GigSerializer(queryset, many=True)
+        gigs_list = models.Gig.objects.all()
+        serializer = serializers.GigSerializer(gigs_list, many=True)
 
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
