@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from cloudinary.models import CloudinaryField
 
 
 class User(AbstractUser):
@@ -29,3 +30,9 @@ class Bid(models.Model):
     gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
     bidder = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     message = models.TextField()
+
+class Post(models.Model):
+    user = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
+    content = models.CharField(max_length=500)
+    image = CloudinaryField('image', folder='jobBoard', blank=True, null=True)
+    

@@ -9,10 +9,19 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 import secrets
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 from django.core.mail import send_mail
 from functools import reduce
 from operator import or_
 from django.db.models import Q
+
+cloudinary.config( 
+  cloud_name = "drrnvvy3v", 
+  api_key = "449689815376197", 
+  api_secret =  "faWVEPjlcc0f6HtaxcG1kMJ-2xI"
+)
 
 class Signup(APIView):
     authentication_classes = []
