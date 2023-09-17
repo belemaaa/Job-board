@@ -17,10 +17,11 @@ class Freelancer(models.Model):
     
 class Hirer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    about = models.CharField(max_length=255)
 
 class Gig(models.Model):
     user = models.ForeignKey(Hirer, on_delete=models.CASCADE)
-    gig_name = models.CharField(max_length=255)
+    role = models.CharField(max_length=255)
     gig_description = models.CharField(max_length=255)
     gig_requirements = models.TextField()
 

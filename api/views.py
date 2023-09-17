@@ -63,13 +63,15 @@ class FreelancerProfile(APIView):
     def post(self, request):
         serializer = serializers.FreelancerSerializer(data=request.data)
         if serializer.is_valid():
-            field = serializer.validated_data.get('field')
-            qualifications = serializer.validated_data.get('qualifications')
+            user = request.user
+            freelancer, created = models.Freelancer.objects.get_or_create(user=user)
 
-            serializer.save(user=request.user)
-            return Response({'message': 'freelancer has been created'}, status=status.HTTP_201_CREATED)
+            freelancer.field = serializer.validated_data.get('field')
+            freelancer.qualifications = serializer.validated_data.get('qualifications')
+            freelancer.save()
+
+            return Response({'message': 'freelancer has been created' if created else 'freelancer profile updated'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -78,6 +80,27 @@ class ViewGigs(APIView):
         gigs_list = models.Gig.objects.all()
         serializer = serializers.GigSerializer(gigs_list, many=True)
 
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+
+class SearchGigs(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        search_query = self.request.query_params.get('q', None)
+        queryset = models.Gig.objects.all()
+        if search_query:
+            search_parts = search_query.split()
+
+            if len(search_parts) == 2:
+                role = search_parts
+                queryset = queryset.filter(Q(role__icontains=role))
+            elif len(search_parts == 1):
+                query_parts = [Q(user__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
+                combined_query = reduce(or_, query_parts)
+                queryset = queryset.filter(combined_query)
+            else:
+                return Response({'message': 'can only enter two search parameters'})
+        serializer = serializers.GigSerializer(queryset, many=True)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
 class Gig_Detail(APIView):
