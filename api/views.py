@@ -60,10 +60,7 @@ class Login(APIView):
             if user is not None and check_password(password, user.password):
                 token = Token.objects.get_or_create(user=user)
                 return Response({
-                    'message': 'login successful',
-                    'access_token': token.key,
-                    'user_id': user.id
-                }, status=status.HTTP_200_OK)
+                    'message': 'login successful', 'access_token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
             return Response({'error': 'invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -79,7 +76,6 @@ class FreelancerProfile(APIView):
             freelancer.field = serializer.validated_data.get('field')
             freelancer.qualifications = serializer.validated_data.get('qualifications')
             freelancer.save()
-
             return Response({'message': 'freelancer has been created' if created else 'freelancer profile updated'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,7 +100,7 @@ class SearchGigs(APIView):
             if len(search_parts) == 2:
                 role = search_parts
                 queryset = queryset.filter(Q(role__icontains=role))
-            elif len(search_parts == 1):
+            elif len(search_parts) == 1:
                 query_parts = [Q(user__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
                 combined_query = reduce(or_, query_parts)
                 queryset = queryset.filter(combined_query)
@@ -150,4 +146,5 @@ class Post(APIView):
             return Response({'message': 'post has been deleted'}, status=status.HTTP_200_OK)
         except models.Post.DoesNotExist:
             return Response({'error': 'post not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
