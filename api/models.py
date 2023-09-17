@@ -25,14 +25,17 @@ class Gig(models.Model):
     role = models.CharField(max_length=255)
     gig_description = models.CharField(max_length=255)
     gig_requirements = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Bid(models.Model):
     gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
     bidder = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Post(models.Model):
     user = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
     image = CloudinaryField('image', folder='jobBoard', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     

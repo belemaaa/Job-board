@@ -17,7 +17,7 @@ class GigSerializer(serializers.ModelSerializer):
     owner_id = serializers.SerializerMethodField()
     class Meta:
         model = models.Gig
-        fields = ['owner_id', 'role', 'gig_description', 'gig_requirements']
+        fields = ['owner_id', 'role', 'gig_description', 'gig_requirements', 'created_at']
     
     def get_owner_id(self, obj):
         return obj.id
@@ -31,6 +31,11 @@ class HirerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Hirer
         fields = ['user', 'about']
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Post
+        fields = ['user', 'content', 'image', 'created_at']
 
 class BidSerializer(serializers.ModelSerializer):
     pass

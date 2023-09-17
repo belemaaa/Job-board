@@ -12,6 +12,7 @@ import secrets
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from cloudinary.uploader import upload
 from django.core.mail import send_mail
 from functools import reduce
 from operator import or_
@@ -119,3 +120,23 @@ class Gig_Detail(APIView):
         queryset = models.Gig.objects.get(id=id)
         serializer = serializers.GigSerializer(queryset, many=False)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+    
+class Post(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = serializers.PostSerializer(data=request.data)
+        if serializer.is_valid():
+            content = serializer.validated_data.get('content') or None
+            if content is None:
+                content = ''
+            image = request.data.get('image')
+            if image:
+                uploaded_image = upload(image)
+                serializer.validated_data['image'] = uploaded_image['secure_url']
+            serializer.save(user=self.request.user)
+            return Response({'message': 'post creation successful', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        qs = models.Post.objects.all()
