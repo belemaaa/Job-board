@@ -38,4 +38,6 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['user', 'content', 'image', 'created_at']
 
 class BidSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = models.Bid
+        fields = ['gig', 'bidder', 'message', 'created_at']

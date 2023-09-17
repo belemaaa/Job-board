@@ -166,3 +166,23 @@ class Post(APIView):
 #         serializer = serializers.PostSerializer(queryset, many=True)
 
 #         return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
+
+class Bid(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, gig_id):
+        try:
+            gig = models.Gig.objects.get(id=gig_id)
+        except models.Gig.DoesNotExist:
+            return Response({'error': f'gig with id {gig_id} does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        bidder = request.user
+        serializer = serializers.BidSerializer(data=request.data)
+        if serializer.is_valid():
+            message = serializer.validated_data.get('message') or None
+            if message is None:
+                message = 'New bid alert.'
+            if gig.user == bidder:
+                return Response({'error': 'You cannot bid your own gig'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save(gig=gig, bidder=bidder, message=message)
+            return Response({'message': f'New bid created for gig {gig_id}'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
