@@ -136,7 +136,18 @@ class Post(APIView):
                 serializer.validated_data['image'] = uploaded_image['secure_url']
             serializer.save(user=self.request.user)
             return Response({'message': 'post creation successful', 'data': serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     
     def get(self, request):
         qs = models.Post.objects.all()
+        serializer = serializers.PostSerializer(qs, many=True)
+        return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
+    
+    def delete(self, request, id):
+        try:
+            post = models.Post.objects.get(id=id)
+            post.delete()
+            return Response({'message': 'post has been deleted'}, status=status.HTTP_200_OK)
+        except models.Post.DoesNotExist:
+            return Response({'error': 'post not found'}, status=status.HTTP_404_NOT_FOUND)
+
