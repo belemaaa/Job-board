@@ -76,7 +76,8 @@ class FreelancerProfile(APIView):
             freelancer.field = serializer.validated_data.get('field')
             freelancer.qualifications = serializer.validated_data.get('qualifications')
             freelancer.save()
-            return Response({'message': 'freelancer has been created' if created else 'freelancer profile updated'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'freelancer has been created' if created else 'freelancer profile updated', 
+                             'profile_data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, user_id):
@@ -89,7 +90,6 @@ class FreelancerProfile(APIView):
         profile_serializer = serializers.FreelancerSerializer(freelancer_profile, many=False)
         post_serializer = serializers.PostSerializer(freelancer_posts, many=True)
         return Response({'Profile data': profile_serializer, 'posts': post_serializer}, status=status.HTTP_200_OK)
-
 
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -108,7 +108,6 @@ class SearchGigs(APIView):
         queryset = models.Gig.objects.all()
         if search_query:
             search_parts = search_query.split()
-
             if len(search_parts) == 2:
                 role = search_parts
                 queryset = queryset.filter(Q(role__icontains=role))
@@ -153,17 +152,17 @@ class Post(APIView):
     
     def delete(self, request, id):
         try:
-            post = models.Post.objects.get(id=id)
+            post = models.Post.objects.get(id=id, user=request.user)
             post.delete()
             return Response({'message': 'post has been deleted'}, status=status.HTTP_200_OK)
         except models.Post.DoesNotExist:
             return Response({'error': 'post not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class Get_Single_User_Posts(APIView):
-    authentication_classes = []
-    permission_classes = []
-    def get(self, request, user_id):
-        queryset = models.Post.objects.filter(user=user_id)
-        serializer = serializers.PostSerializer(queryset, many=True)
+# class Get_Single_User_Posts(APIView):
+#     authentication_classes = []
+#     permission_classes = []
+#     def get(self, request, user_id):
+#         queryset = models.Post.objects.filter(user=user_id)
+#         serializer = serializers.PostSerializer(queryset, many=True)
 
-        return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
+#         return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
