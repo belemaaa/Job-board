@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
-import hirer_views as hv
+from . import hirer_views as hv
 
-url_patterns = [
+urlpatterns = [
     path('signup/', views.Signup.as_view()),
     path('login/', views.Login.as_view()),
     path('view_gigs/', views.ViewGigs.as_view()),
     path('search_gig/', views.SearchGigs.as_view()),
-    path('gig/<int:id>', views.SearchGigs.as_view()),
+    path('gig/<int:id>', views.ViewGigs.as_view()),
 
     #freelancer
     path('freelancer_profile/create/', views.FreelancerProfile.as_view()),

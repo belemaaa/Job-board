@@ -58,9 +58,11 @@ class Login(APIView):
             except models.User.DoesNotExist:
                 user=None
             if user is not None and check_password(password, user.password):
-                token = Token.objects.get_or_create(user=user)
+                token, created = Token.objects.get_or_create(user=user)
                 return Response({
-                    'message': 'login successful', 'access_token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
+                    'message': 'login successful', 
+                    'token': token.key, 
+                    'user_id': user.id}, status=status.HTTP_200_OK)
             return Response({'error': 'invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

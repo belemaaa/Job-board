@@ -1,7 +1,10 @@
 from django.contrib import admin
-from .models import User, Gig, Job
+from . import models
 
 # Register your models here.
-admin.site.register(User)
-admin.site.register(Gig)
-admin.site.register(Job)
+admin.site.register(models.User)
+admin.site.register(models.Freelancer)
+admin.site.register(models.Hirer)
+admin.site.register(models.Gig)
+admin.site.register(models.Bid)
+admin.site.register(models.Post)

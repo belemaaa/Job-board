@@ -10,8 +10,6 @@ class SignupSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
-    confirmation_code = serializers.CharField()
-
 
 class GigSerializer(serializers.ModelSerializer):
     owner_id = serializers.SerializerMethodField()
