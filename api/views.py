@@ -17,6 +17,7 @@ from django.core.mail import send_mail
 from functools import reduce
 from operator import or_
 from django.db.models import Q
+from .permissions import IsPostOwner
 
 cloudinary.config( 
   cloud_name = "drrnvvy3v", 
@@ -144,7 +145,7 @@ class Gig_Detail(APIView):
     
 class Post(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsPostOwner]
     def post(self, request):
         serializer = serializers.PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -170,6 +171,7 @@ class Post(APIView):
         try:
             user = models.Freelancer.objects.get(user=self.request.user)
             post = models.Post.objects.get(id=id, user=user)
+            self.check_object_permissions(request, post)
             post.delete()
             return Response({'message': 'post has been deleted'}, status=status.HTTP_200_OK)
         except models.Post.DoesNotExist:
