@@ -10,7 +10,8 @@ url_patterns = [
     path('gig/<int:id>', views.SearchGigs.as_view()),
 
     #freelancer
-    path('freelancer_profile', views.FreelancerProfile.as_view()),
+    path('freelancer_profile/create/', views.FreelancerProfile.as_view()),
+    path('freelancer_profile/<int:id>/view/', views.FreelancerProfile.as_view()),
 
     #hirer
     path('create_gig/', hv.CreateGig.as_view()),

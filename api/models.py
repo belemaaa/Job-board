@@ -4,7 +4,6 @@ from cloudinary.models import CloudinaryField
 
 
 class User(AbstractUser):
-    confirmation_code = models.CharField(max_length=6)
     def __str__(self):
         return self.username
 
@@ -19,6 +18,9 @@ class Freelancer(models.Model):
 class Hirer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     about = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user.username
 
 class Gig(models.Model):
     user = models.ForeignKey(Hirer, on_delete=models.CASCADE)
