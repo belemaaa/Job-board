@@ -164,7 +164,6 @@ class Post(APIView):
 #     def get(self, request, user_id):
 #         queryset = models.Post.objects.filter(user=user_id)
 #         serializer = serializers.PostSerializer(queryset, many=True)
-
 #         return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
 
 class Bid(APIView):
