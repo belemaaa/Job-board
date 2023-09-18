@@ -88,7 +88,8 @@ class FreelancerProfile(APIView):
             freelancer_profile = models.Freelancer.objects.get(user=user_id)
         except models.Freelancer.DoesNotExist:
             return Response({'error': 'freelancer not found'}, status=status.HTTP_404_NOT_FOUND) 
-        freelancer_posts = models.Post.objects.filter(user=user_id)
+        user = models.Freelancer.objects.get(user=self.request.user)
+        freelancer_posts = models.Post.objects.filter(user=user)
 
         profile_serializer = serializers.FreelancerSerializer(freelancer_profile, many=False)
         post_serializer = serializers.PostSerializer(freelancer_posts, many=True)
@@ -167,7 +168,8 @@ class Post(APIView):
     
     def delete(self, request, id):
         try:
-            post = models.Post.objects.get(id=id, user=request.user)
+            user = models.Freelancer.objects.get(user=self.request.user)
+            post = models.Post.objects.get(id=id, user=user)
             post.delete()
             return Response({'message': 'post has been deleted'}, status=status.HTTP_200_OK)
         except models.Post.DoesNotExist:

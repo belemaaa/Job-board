@@ -29,11 +29,17 @@ class Gig(models.Model):
     gig_requirements = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Gig by {self.user.user.username} created at {self.created_at}"
+
 class Bid(models.Model):
     gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
     bidder = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Bid by {self.bidder.user.username} created at {self.created_at}"
 
 class Post(models.Model):
     user = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
@@ -41,3 +47,5 @@ class Post(models.Model):
     image = CloudinaryField('image', folder='jobBoard', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return f"Post by {self.user.user.username} created at {self.created_at}"
