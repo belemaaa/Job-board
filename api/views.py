@@ -150,11 +150,13 @@ class Post(APIView):
             content = serializer.validated_data.get('content') or None
             if content is None:
                 content = ''
+            # retrieve the Freelancer instance associated with the authenticated user
+            user = models.Freelancer.objects.get(user=self.request.user)
             image = request.data.get('image')
             if image:
                 uploaded_image = upload(image)
                 serializer.validated_data['image'] = uploaded_image['secure_url']
-            serializer.save(user=self.request.user)
+            serializer.save(user=user)
             return Response({'message': 'post creation successful', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     

@@ -31,9 +31,19 @@ class HirerSerializer(serializers.ModelSerializer):
         fields = ['user', 'about']
 
 class PostSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = models.Post
-        fields = ['user', 'content', 'image', 'created_at']
+        fields = ['id', 'owner', 'content', 'image', 'created_at']
+
+    def get_owner(self, obj):
+        return {
+            'first_name': obj.user.user.first_name,
+            'last_name': obj.user.user.last_name,
+            'username': obj.user.user.username,
+            'email': obj.user.user.email,
+            'field': obj.user.field
+        }
 
 class BidSerializer(serializers.ModelSerializer):
     class Meta:
