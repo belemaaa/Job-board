@@ -4,7 +4,7 @@ from . import models
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'confirmation_code']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password']
 
 
 class LoginSerializer(serializers.Serializer):
@@ -23,7 +23,7 @@ class GigSerializer(serializers.ModelSerializer):
 class FreelancerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Freelancer
-        fields = ['user', 'field', 'qualifications']
+        fields = ['field', 'qualifications']
 
 class HirerSerializer(serializers.ModelSerializer):
     class Meta:

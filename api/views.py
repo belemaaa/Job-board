@@ -79,6 +79,7 @@ class FreelancerProfile(APIView):
             freelancer.qualifications = serializer.validated_data.get('qualifications')
             freelancer.save()
             return Response({'message': 'freelancer has been created' if created else 'freelancer profile updated', 
+                             'user': freelancer.user.id,
                              'profile_data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -91,7 +92,7 @@ class FreelancerProfile(APIView):
 
         profile_serializer = serializers.FreelancerSerializer(freelancer_profile, many=False)
         post_serializer = serializers.PostSerializer(freelancer_posts, many=True)
-        return Response({'Profile data': profile_serializer, 'posts': post_serializer}, status=status.HTTP_200_OK)
+        return Response({'Profile data': profile_serializer.data, 'posts': post_serializer.data}, status=status.HTTP_200_OK)
 
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
