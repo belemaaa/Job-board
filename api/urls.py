@@ -18,5 +18,7 @@ urlpatterns = [
     path('hirer_profile/create/', hv.HirerProfile.as_view()),
     path('hirer_profile/<int:user_id>/view/', hv.HirerProfile.as_view()),
     path('gigs/create/', hv.Gig.as_view()),
+    path('gigs/update/<int:gig_id>/', hv.Gig.as_view()),
+    path('gigs/delete/<int:gig_id>/', hv.Gig.as_view()),
     path('gigs/personal/', hv.Hirer_Gigs_Single.as_view())
 ]

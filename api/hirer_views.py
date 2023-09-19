@@ -73,7 +73,15 @@ class Gig(APIView):
                 return Response({'message': 'gig data has been updated', 'data': serializer.data}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except models.Gig.DoesNotExist:
-            return Response({f'gig not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'gig not found.'}, status=status.HTTP_404_NOT_FOUND)
+    def delete(self, request, gig_id):
+        try:
+            user = models.Hirer.objects.get(user=self.request.user)
+            instance = models.Gig.objects.get(id=gig_id, user=user)
+            instance.delete()
+            return Response({'message': 'gig has been deleted'}, status=status.HTTP_200_OK)
+        except models.Gig.DoesNotExist:
+            return Response({'error': 'gig not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class Hirer_Gigs_Single(APIView):
     authentication_classes = [TokenAuthentication]
