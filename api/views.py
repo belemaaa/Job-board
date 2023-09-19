@@ -185,13 +185,14 @@ class Post(APIView):
         except models.Post.DoesNotExist:
             return Response({'error': 'post not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# class Get_Single_User_Posts(APIView):
-#     authentication_classes = []
-#     permission_classes = []
-#     def get(self, request, user_id):
-#         queryset = models.Post.objects.filter(user=user_id)
-#         serializer = serializers.PostSerializer(queryset, many=True)
-#         return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
+class Get_Single_Freelancer_Posts(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self, request, user_id):
+        freelancer = models.Freelancer.objects.get(user=user_id)
+        queryset = models.Post.objects.filter(user=freelancer)
+        serializer = serializers.PostSerializer(queryset, many=True)
+        return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
 
 class Bid(APIView):
     authentication_classes = [TokenAuthentication]
@@ -212,5 +213,4 @@ class Bid(APIView):
             serializer.save(gig=gig, bidder=bidder, message=message)
             return Response({'message': f'New bid created for gig {gig_id}'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
     
