@@ -135,7 +135,7 @@ class SearchGigs(APIView):
                 role, role = search_parts
                 queryset = queryset.filter(Q(role__icontains=role) & (Q(role__icontains=role)))
             elif len(search_parts) == 1:
-                query_parts = [Q(user__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
+                query_parts = [Q(user__user__username__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
                 combined_query = reduce(or_, query_parts)
                 queryset = queryset.filter(combined_query)
             else:
@@ -214,3 +214,5 @@ class Bid(APIView):
             return Response({'message': f'New bid created for gig {gig_id}'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class SaveGig(APIView):
+    pass

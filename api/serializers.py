@@ -48,3 +48,8 @@ class BidSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Bid
         fields = ['gig', 'bidder', 'message', 'created_at']
+
+class SavedGigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SavedGigs
+        fields = ['saved_at']

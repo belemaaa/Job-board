@@ -6,7 +6,7 @@ urlpatterns = [
     path('signup/', views.Signup.as_view()),
     path('login/', views.Login.as_view()),
     path('gigs/view/', views.ViewGigs.as_view()),
-    path('gigs/search/', views.SearchGigs.as_view()),
+    path('gigs/search', views.SearchGigs.as_view()),
     path('gigs/view/<int:id>/', views.Gig_Detail.as_view()),
     path('posts/view/', views.Post.as_view()),
     #freelancer
