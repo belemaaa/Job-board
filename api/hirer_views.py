@@ -48,10 +48,11 @@ class CreateGig(APIView):
     def post(self, request):
         serializer = serializers.GigSerializer(data=request.data)
         if serializer.is_valid():
-            role = serializer.validated_data.get('gig_name')
+            role = serializer.validated_data.get('role')
             gig_description = serializer.validated_data.get('gig_description')
             gig_requirements = serializer.validated_data.get('gig_requirements')
-
+            # retrieve hirer instance 
+            user = models.Hirer.objects.get(user=self.request.user)
             serializer.save(user=request.user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

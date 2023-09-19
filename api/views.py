@@ -91,10 +91,18 @@ class FreelancerProfile(APIView):
             return Response({'error': 'freelancer not found'}, status=status.HTTP_404_NOT_FOUND) 
         user = models.Freelancer.objects.get(user=self.request.user)
         freelancer_posts = models.Post.objects.filter(user=user)
-
-        profile_serializer = serializers.FreelancerSerializer(freelancer_profile, many=False)
         post_serializer = serializers.PostSerializer(freelancer_posts, many=True)
-        return Response({'Profile data': profile_serializer.data, 'posts': post_serializer.data}, status=status.HTTP_200_OK)
+
+        profile_data = {
+            'first_name': freelancer_profile.user.first_name,
+            'last_name': freelancer_profile.user.last_name,
+            'username': freelancer_profile.user.username,
+            'email': freelancer_profile.user.email,
+            'field': freelancer_profile.field,
+            'qualifications': freelancer_profile.qualifications,
+            'posts': post_serializer.data
+        }
+        return Response({'data': profile_data}, status=status.HTTP_200_OK)
 
 class ViewGigs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -204,3 +212,5 @@ class Bid(APIView):
             serializer.save(gig=gig, bidder=bidder, message=message)
             return Response({'message': f'New bid created for gig {gig_id}'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
