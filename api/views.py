@@ -109,14 +109,14 @@ class ViewGigs(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         gig_list = models.Gig.objects.all()
-        serializer = serializers.GigSerializer(gig_list, many=True)
         gigs_with_bids = []
         for gig in gig_list:
             bids = gig.bid_set.all()
             bid_count = bids.count()
             bidders = [bid.bidder.user.username for bid in bids]
+            gig_serializer = serializers.GigSerializer(gig)  # serialize the gig object
             gig_data = {
-                'gig': serializer.data[gig_list.index(gig)],
+                'gig': gig_serializer.data,
                 'bid_count': bid_count,
                 'bidders': bidders
             }
