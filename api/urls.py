@@ -9,14 +9,14 @@ urlpatterns = [
     path('gigs/search/', views.SearchGigs.as_view()),
     path('gigs/view/<int:id>/', views.Gig_Detail.as_view()),
     path('posts/view/', views.Post.as_view()),
-
     #freelancer
     path('freelancer_profile/create/', views.FreelancerProfile.as_view()),
     path('freelancer_profile/<int:user_id>/view/', views.FreelancerProfile.as_view()),
     path('posts/create/', views.Post.as_view()),
     path('posts/<int:id>/delete/', views.Post.as_view()),
-
     #hirer
+    path('hirer_profile/create/', hv.HirerProfile.as_view()),
+    path('hirer_profile/<int:user_id>/view/', hv.HirerProfile.as_view()),
     path('gigs/create/', hv.CreateGig.as_view()),
     path('gigs/personal/', hv.Hirer_Gigs.as_view())
 ]
