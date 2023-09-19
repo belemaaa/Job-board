@@ -28,7 +28,7 @@ class FreelancerSerializer(serializers.ModelSerializer):
 class HirerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Hirer
-        fields = ['user', 'about']
+        fields = ['about']
 
 class PostSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()

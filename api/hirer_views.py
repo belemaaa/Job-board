@@ -13,7 +13,35 @@ from django.core.mail import send_mail
 from functools import reduce
 from operator import or_
 from django.db.models import Q
+
+
+class HirerProfile(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = serializers.HirerSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            hirer, created = models.Freelancer.objects.get_or_create(user=user)
+            hirer.about = serializer.validated_data.get('field')
+            hirer.save()
+            return Response({'message': 'hirer has been created' if created else 'hirer profile updated', 
+                             'user': hirer.user.id,
+                             'profile_data': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def get(self, request, user_id):
+        try:
+            hirer_profile = models.Hirer.objects.get(user=user_id)
+        except models.Hirer.DoesNotExist:
+            return Response({'error': 'hirer not found'}, status=status.HTTP_404_NOT_FOUND) 
+        user = models.Hirer.objects.get(user=self.request.user)
+        hirer_gigs = models.Gig.objects.filter(user=user)
+
+        profile_serializer = serializers.HirerSerializer(hirer_profile, many=False)
+        gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
+        return Response({'Profile data': profile_serializer.data, 'posts': gig_serializer.data}, status=status.HTTP_200_OK)
+
 class CreateGig(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
