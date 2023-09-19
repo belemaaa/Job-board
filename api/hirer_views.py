@@ -13,21 +13,6 @@ from django.core.mail import send_mail
 from functools import reduce
 from operator import or_
 from django.db.models import Q
-
-
-# class SearchJobs(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     def get(self, request):
-#         search_query = self.request.query_params.get('q', None)
-#         queryset = models.Job.objects.all()
-#         if search_query:
-#             queryset = queryset.filter(
-#                 Q(job_name__icontains=search_query) |
-#                 Q(job_owner__icontains=search_query)
-#             )
-#         serializer = serializers.JobSerializer(queryset, many=True)
-#         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
 class CreateGig(APIView):
     authentication_classes = [TokenAuthentication]
