@@ -49,7 +49,7 @@ class HirerProfile(APIView):
         }
         return Response({'data': profile_data}, status=status.HTTP_200_OK)
 
-class CreateGig(APIView):
+class Gig(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request):
@@ -63,6 +63,17 @@ class CreateGig(APIView):
             serializer.save(user=request.user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, gig_id):
+        try:
+            user = models.Hirer.objects.get(user=self.request.user)
+            gig = models.Gig.objects.get(id=gig_id, user=user)
+            serializer = serializers.GigSerializer(gig, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'gig data has been updated', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except models.Gig.DoesNotExist:
+            return Response({f'gig not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 class Hirer_Gigs_Single(APIView):
     authentication_classes = [TokenAuthentication]
@@ -83,12 +94,12 @@ class Hirer_Gigs_Single(APIView):
         except models.Gig.DoesNotExist:
             return Response({'error': 'Gig not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class GetAllGigs(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    def get(self, request):
-        gigs_list = models.Gig.objects.all()
-        serializer = serializers.GigSerializer(gigs_list, many=True)
+# class GetAllGigs(APIView):
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request):
+#         gigs_list = models.Gig.objects.all()
+#         serializer = serializers.GigSerializer(gigs_list, many=True)
 
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+#         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     

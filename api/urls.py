@@ -17,6 +17,6 @@ urlpatterns = [
     #hirer
     path('hirer_profile/create/', hv.HirerProfile.as_view()),
     path('hirer_profile/<int:user_id>/view/', hv.HirerProfile.as_view()),
-    path('gigs/create/', hv.CreateGig.as_view()),
-    path('gigs/personal/', hv.Hirer_Gigs.as_view())
+    path('gigs/create/', hv.Gig.as_view()),
+    path('gigs/personal/', hv.Hirer_Gigs_Single.as_view())
 ]
