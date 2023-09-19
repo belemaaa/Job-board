@@ -132,8 +132,8 @@ class SearchGigs(APIView):
         if search_query:
             search_parts = search_query.split()
             if len(search_parts) == 2:
-                role = search_parts
-                queryset = queryset.filter(Q(role__icontains=role))
+                role, role = search_parts
+                queryset = queryset.filter(Q(role__icontains=role) & (Q(role__icontains=role)))
             elif len(search_parts) == 1:
                 query_parts = [Q(user__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
                 combined_query = reduce(or_, query_parts)
