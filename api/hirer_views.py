@@ -14,7 +14,6 @@ from functools import reduce
 from operator import or_
 from django.db.models import Q
 
-
 class HirerProfile(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -22,14 +21,13 @@ class HirerProfile(APIView):
         serializer = serializers.HirerSerializer(data=request.data)
         if serializer.is_valid():
             user = request.user
-            hirer, created = models.Freelancer.objects.get_or_create(user=user)
-            hirer.about = serializer.validated_data.get('field')
+            hirer, created = models.Hirer.objects.get_or_create(user=user)
+            hirer.about = serializer.validated_data.get('about')
             hirer.save()
             return Response({'message': 'hirer has been created' if created else 'hirer profile updated', 
                              'user': hirer.user.id,
                              'profile_data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
     def get(self, request, user_id):
         try:
             hirer_profile = models.Hirer.objects.get(user=user_id)
