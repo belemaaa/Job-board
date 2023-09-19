@@ -37,10 +37,17 @@ class HirerProfile(APIView):
             return Response({'error': 'hirer not found'}, status=status.HTTP_404_NOT_FOUND) 
         user = models.Hirer.objects.get(user=self.request.user)
         hirer_gigs = models.Gig.objects.filter(user=user)
+        gig_serializer = serializers.PostSerializer(hirer_gigs, many=True)
 
-        profile_serializer = serializers.HirerSerializer(hirer_profile, many=False)
-        gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
-        return Response({'Profile data': profile_serializer.data, 'posts': gig_serializer.data}, status=status.HTTP_200_OK)
+        profile_data = {
+            'first_name': hirer_profile.user.first_name,
+            'last_name': hirer_profile.user.last_name,
+            'username': hirer_profile.user.username,
+            'email': hirer_profile.user.email,
+            'about': hirer_profile.about,
+            'gigs': gig_serializer.data
+        }
+        return Response({'data': profile_data}, status=status.HTTP_200_OK)
 
 class CreateGig(APIView):
     authentication_classes = [TokenAuthentication]
@@ -57,12 +64,12 @@ class CreateGig(APIView):
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-class Hirer_Gigs(APIView):
+class Hirer_Gigs_Single(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        user = request.user
-        queryset = models.Gig.objects.filter(user=user)
+        hirer = models.Hirer.objects.get(user=self.request.user)
+        queryset = models.Gig.objects.filter(user=hirer)
         serializer = serializers.GigSerializer(queryset, many=True)
         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
      
