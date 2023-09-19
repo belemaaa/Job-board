@@ -42,7 +42,6 @@ class PostSerializer(serializers.ModelSerializer):
             'last_name': obj.user.user.last_name,
             'username': obj.user.user.username,
             'email': obj.user.user.email,
-            'field': obj.user.field
         }
 
 class BidSerializer(serializers.ModelSerializer):

@@ -35,7 +35,7 @@ class HirerProfile(APIView):
             return Response({'error': 'hirer not found'}, status=status.HTTP_404_NOT_FOUND) 
         user = models.Hirer.objects.get(user=self.request.user)
         hirer_gigs = models.Gig.objects.filter(user=user)
-        gig_serializer = serializers.PostSerializer(hirer_gigs, many=True)
+        gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
 
         profile_data = {
             'first_name': hirer_profile.user.first_name,
@@ -58,7 +58,7 @@ class Gig(APIView):
             gig_requirements = serializer.validated_data.get('gig_requirements')
             # retrieve hirer instance 
             user = models.Hirer.objects.get(user=self.request.user)
-            serializer.save(user=request.user)
+            serializer.save(user=user)
             return Response({'message': 'Gig created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     def put(self, request, gig_id):
