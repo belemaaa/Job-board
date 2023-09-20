@@ -51,5 +51,5 @@ class BidSerializer(serializers.ModelSerializer):
 
 class SavedGigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.SavedGigs
+        model = models.SavedGig
         fields = ['saved_at']

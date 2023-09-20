@@ -50,7 +50,7 @@ class Post(models.Model):
     def __str__(self):
         return f"Post by {self.user.user.username} created at {self.created_at}"
     
-class SavedGigs(models.Model):
+class SavedGig(models.Model):
     user = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
     gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
     saved_at = models.DateTimeField(auto_now_add=True)

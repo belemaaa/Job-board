@@ -214,14 +214,21 @@ class Bid(APIView):
             serializer.save(gig=gig, bidder=bidder, message=message)
             return Response({'message': f'New bid created for gig {gig_id}'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class SaveGig(APIView):
+
+# limited to only freelancer users   
+class Save_Gig(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request, gig_id):
         try:
-            # retrieve freelancer object associated with the logged in user
+            # retrieve freelancer object associated with the logged in user (if freelancer)
             user = models.Freelancer.objects.get(user=self.request.user)
             gig = models.Gig.objects.get(id=gig_id)
         except models.Gig.DoesNotExist:
-            return Response({'error': 'gig not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'gig not found'}, status=status.HTTP_404_NOT_FOUND) 
+        saved_gig, created = models.SavedGig.objects.get_or_create(user=user, gig=gig)
+        if created:
+            return Response({'message': 'gig saved successfully.'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message': 'gig is already saved to your collection.'}, status=status.HTTP_200_OK)
+
