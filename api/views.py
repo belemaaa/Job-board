@@ -24,7 +24,6 @@ cloudinary.config(
   api_key = "449689815376197", 
   api_secret =  "faWVEPjlcc0f6HtaxcG1kMJ-2xI"
 )
-
 class Signup(APIView):
     authentication_classes = []
     permission_classes = []
@@ -236,6 +235,21 @@ class Save_Gig(APIView):
         user = models.Freelancer.objects.get(user=self.request.user)
         saved_gigs = models.SavedGig.objects.get(user=user)
         serializer = serializers.SavedGigSerializer(saved_gigs, many=True)
-
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+        if saved_gigs is None:
+            return Response({'message': 'No gig has been saved'},status=status.HTTP_200_OK)
+        else:
+            gig = {
+                "owner": {
+                    "first_name": saved_gigs.gig.user.user.first_name,
+                    "last_name": saved_gigs.gig.user.user.last_name,
+                    "username": saved_gigs.gig.user.user.username,
+                    "email": saved_gigs.gig.user.user.email,
+                },
+                "gig": {
+                    "role": saved_gigs.gig.role,
+                    "gig_description": saved_gigs.gig.gig_description,
+                    "gig_requirements": saved_gigs.gig.gig_requirements
+                }
+            }
+            return Response(gig, status=status.HTTP_200_OK)
 
