@@ -135,7 +135,8 @@ class SearchGigs(APIView):
                 role, role = search_parts
                 queryset = queryset.filter(Q(role__icontains=role) & (Q(role__icontains=role)))
             elif len(search_parts) == 1:
-                query_parts = [Q(user__user__username__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) for part in search_parts]
+                query_parts = [Q(user__user__username__icontains=part) | Q(role__icontains=part) | Q(gig_description__icontains=part) | 
+                               Q(user__user__first_name__icontains=part) | Q(user__user__last_name=part) for part in search_parts]
                 combined_query = reduce(or_, query_parts)
                 queryset = queryset.filter(combined_query)
             else:
@@ -215,4 +216,12 @@ class Bid(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class SaveGig(APIView):
-    pass
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, gig_id):
+        try:
+            # retrieve freelancer object associated with the logged in user
+            user = models.Freelancer.objects.get(user=self.request.user)
+            gig = models.Gig.objects.get(id=gig_id)
+        except models.Gig.DoesNotExist:
+            return Response({'error': 'gig not found'}, status=status.HTTP_404_NOT_FOUND)
