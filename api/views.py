@@ -230,5 +230,12 @@ class Save_Gig(APIView):
         if created:
             return Response({'message': 'gig saved successfully.'}, status=status.HTTP_201_CREATED)
         else:
-            return Response({'message': 'gig is already saved to your collection.'}, status=status.HTTP_200_OK)
+            return Response({'message': 'gig is already saved to your collection.'}, status=status.HTTP_200_OK)    
+    # retrieve saved gigs
+    def get(self, request):
+        user = models.Freelancer.objects.get(user=self.request.user)
+        saved_gigs = models.SavedGig.objects.get(user=user)
+        serializer = serializers.SavedGigSerializer(saved_gigs, many=True)
+
+        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
