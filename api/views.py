@@ -118,10 +118,10 @@ class ViewGigs(APIView):
             gig_data = {
                 'gig': gig_serializer.data,
                 'bid_count': bid_count,
-                'bidders': bidders
+                'bidders': bidders,
             }
             gigs_with_bids.append(gig_data)
-        return Response({'data': gigs_with_bids}, status=status.HTTP_200_OK)
+        return Response(gigs_with_bids, status=status.HTTP_200_OK)
 
 class SearchGigs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -203,7 +203,7 @@ class Bid(APIView):
             gig = models.Gig.objects.get(id=gig_id)
         except models.Gig.DoesNotExist:
             return Response({'error': f'gig with id {gig_id} does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        bidder = request.user
+        bidder = models.Freelancer.objects.get(user=self.request.user)
         serializer = serializers.BidSerializer(data=request.data)
         if serializer.is_valid():
             message = serializer.validated_data.get('message') or None

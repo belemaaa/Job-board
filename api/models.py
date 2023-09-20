@@ -35,7 +35,7 @@ class Gig(models.Model):
 class Bid(models.Model):
     gig = models.ForeignKey(Gig, on_delete=models.CASCADE)
     bidder = models.ForeignKey(Freelancer, on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -15,7 +15,8 @@ urlpatterns = [
     path('posts/create/', views.Post.as_view()),
     path('posts/<int:id>/delete/', views.Post.as_view()),
     path('gigs/save/<int:gig_id>/', views.Save_Gig.as_view()),
-    path('gigs/collection', views.Save_Gig.as_view()),
+    path('gigs/collection/', views.Save_Gig.as_view()),
+    path('gigs/bid/<int:gig_id>/', views.Bid.as_view()),
     #hirer
     path('hirer_profile/create/', hv.HirerProfile.as_view()),
     path('hirer_profile/<int:user_id>/view/', hv.HirerProfile.as_view()),
