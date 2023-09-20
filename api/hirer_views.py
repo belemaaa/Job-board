@@ -34,16 +34,28 @@ class HirerProfile(APIView):
         except models.Hirer.DoesNotExist:
             return Response({'error': 'hirer not found'}, status=status.HTTP_404_NOT_FOUND) 
         user = models.Hirer.objects.get(user=self.request.user)
-        hirer_gigs = models.Gig.objects.filter(user=user)
-        gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
-
+        # hirer_gigs = models.Gig.objects.filter(user=user)
+        # gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
+        gig_list = models.Gig.objects.all()
+        gigs_with_bids = []
+        for gig in gig_list:
+            bids = gig.bid_set.all()
+            bid_count = bids.count()
+            bidders = [bid.bidder.user.username for bid in bids]
+            gig_serializer = serializers.GigSerializer(gig)
+            gig_data = {
+                'gig': gig_serializer.data,
+                'bid_count': bid_count,
+                'bidders': bidders,
+            }
+            gigs_with_bids.append(gig_data)
         profile_data = {
             'first_name': hirer_profile.user.first_name,
             'last_name': hirer_profile.user.last_name,
             'username': hirer_profile.user.username,
             'email': hirer_profile.user.email,
             'about': hirer_profile.about,
-            'gigs': gig_serializer.data
+            'gigs': gigs_with_bids
         }
         return Response({'data': profile_data}, status=status.HTTP_200_OK)
 
