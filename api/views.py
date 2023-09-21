@@ -47,7 +47,7 @@ class Signup(APIView):
             # create a user instance
             user = models.User(first_name=first_name, last_name=last_name, username=username, email=email, password=hashed_password)    
             code = self.generate_code()
-            models.EmailVerification.objects.create(user=user, code=code)
+            models.ConfirmationCode.objects.create(user=user, code=code)
 
             # send verification code to user's email
             subject = 'Signup Verification Code'
@@ -65,7 +65,7 @@ class CodeConfirmation(APIView):
     def post(self, request):
         code = request.data.get('code')
         user_id = request.data.get('user_id')
-        email_verification = get_object_or_404(models.EmailVerification, user=user_id, code=code)
+        email_verification = get_object_or_404(models.ConfirmationCode, user=user_id, code=code)
         # save user to database
         email_verification.user.save()
         return Response({'messgae': 'signup was successful'}, status=status.HTTP_200_OK)

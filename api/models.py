@@ -7,7 +7,7 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-class EmailVerification(models.Model):
+class ConfirmationCode(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
     
