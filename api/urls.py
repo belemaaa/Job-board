@@ -4,6 +4,7 @@ from . import hirer_views as hv
 
 urlpatterns = [
     path('signup/', views.Signup.as_view()),
+    path('signup/confirm/', views.CodeConfirmation.as_view()),
     path('login/', views.Login.as_view()),
     path('gigs/view/', views.ViewGigs.as_view()),
     path('gigs/search', views.SearchGigs.as_view()),

@@ -18,6 +18,9 @@ from functools import reduce
 from operator import or_
 from django.db.models import Q
 from .permissions import IsPostOwner
+import random
+from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 cloudinary.config( 
   cloud_name = "drrnvvy3v", 
@@ -27,6 +30,8 @@ cloudinary.config(
 class Signup(APIView):
     authentication_classes = []
     permission_classes = []
+    def generate_code(self):
+        return str(random.randint(100000, 999999))
     def post(self, request):
         serializer = serializers.SignupSerializer(data=request.data)
         if serializer.is_valid():
@@ -36,15 +41,35 @@ class Signup(APIView):
             email = serializer.validated_data.get('email')
             raw_password = serializer.validated_data.get('password')
             hashed_password = make_password(raw_password)
-            
             user_exists = models.User.objects.filter(username=username)
             if user_exists:
                 return Response({'error': 'user with this username already exists'}, status=status.HTTP_400_BAD_REQUEST)
-            # send mail...
-            serializer.save(password = hashed_password)
-            return Response({'message': 'signup successful'}, status=status.HTTP_201_CREATED)
+            # create a user instance
+            user = models.User(first_name=first_name, last_name=last_name, username=username, email=email, password=hashed_password)    
+            code = self.generate_code()
+            models.EmailVerification.objects.create(user=user, code=code)
+
+            # send verification code to user's email
+            subject = 'Signup Verification Code'
+            message = f"Hello {first_name} {last_name},\n\n"\
+                      f"Your verification code is: {code}\n\n"
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [email]
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            return Response({'verification_code': {code}, 'user_id': user.id}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+class CodeConfirmation(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def post(self, request):
+        code = request.data.get('code')
+        user_id = request.data.get('user_id')
+        email_verification = get_object_or_404(models.EmailVerification, user=user_id, code=code)
+        # save user to database
+        email_verification.user.save()
+        return Response({'messgae': 'signup was successful'}, status=status.HTTP_200_OK)
+
 class Login(APIView):
     authentication_classes = []
     permission_classes = []

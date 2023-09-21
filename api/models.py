@@ -7,6 +7,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+class EmailVerification(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    
 class Freelancer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     field = models.CharField(max_length=255)
