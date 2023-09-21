@@ -3,6 +3,7 @@ from . import models
 
 # Register your models here.
 admin.site.register(models.User)
+admin.site.register(models.ConfirmationCode)
 admin.site.register(models.Freelancer)
 admin.site.register(models.Hirer)
 admin.site.register(models.Gig)

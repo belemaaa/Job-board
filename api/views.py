@@ -40,8 +40,17 @@ class Signup(APIView):
             user_exists = models.User.objects.filter(email=email)
             if user_exists:
                 return Response({'error': 'user with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            password = validated_data.get('password')
+            hashed_password = make_password(password)
+            user_details = {
+                "first_name": validated_data.get('first_name'),
+                "last_name": validated_data.get('last_name'),
+                "username": validated_data.get('username'),
+                "email": validated_data.get('email'),
+                "password": hashed_password
+            }
             code = self.generate_code()
-            confirmation_code = models.ConfirmationCode(email=email, code=code, user=validated_data)
+            confirmation_code = models.ConfirmationCode(email=email, code=code, user_details=user_details)
             confirmation_code.save()
             # send verification code to user's email
             subject = 'Signup Verification Code'
@@ -62,11 +71,11 @@ class CodeConfirmation(APIView):
         confirmation_code = get_object_or_404(models.ConfirmationCode, email=email)
         if confirmation_code.is_verified:
             return Response({'error': 'Code has already been used'}, status=status.HTTP_400_BAD_REQUEST)
-        elif confirmation_code.code == code and confirmation_code.user.email == email:
-            hashed_password = make_password(confirmation_code.user.password)
+        elif confirmation_code.code == code and confirmation_code.user_details['email'] == email:
+            hashed_password = make_password(confirmation_code.user_details['password'])
             user = models.User(
-                first_name=confirmation_code.user.first_name,
-                last_name=confirmation_code.user.last_name,
+                first_name=confirmation_code.user_details['first_name'],
+                last_name=confirmation_code.user_details['last_name'],
                 username=confirmation_code.user_details['username'],
                 email=confirmation_code.user_details['email'],
                 password=hashed_password

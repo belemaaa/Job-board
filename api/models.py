@@ -8,8 +8,9 @@ class User(AbstractUser):
         return self.username
 
 class ConfirmationCode(models.Model):
+    email = models.EmailField(unique=True)
     code = models.CharField(max_length=6)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_details = models.JSONField(null=True)
     is_verified = models.BooleanField(default=False)
     
 class Freelancer(models.Model):
