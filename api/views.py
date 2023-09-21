@@ -56,7 +56,7 @@ class Signup(APIView):
             from_email = settings.DEFAULT_FROM_EMAIL
             recipient_list = [email]
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-            return Response({'verification_code': {code}, 'user_id': user.id}, status=status.HTTP_201_CREATED)
+            return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code, 'user_id': user.id}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CodeConfirmation(APIView):
@@ -68,7 +68,7 @@ class CodeConfirmation(APIView):
         email_verification = get_object_or_404(models.ConfirmationCode, user=user_id, code=code)
         # save user to database
         email_verification.user.save()
-        return Response({'messgae': 'signup was successful'}, status=status.HTTP_200_OK)
+        return Response({'messgae': 'Signup was successful'}, status=status.HTTP_200_OK)
 
 class Login(APIView):
     authentication_classes = []

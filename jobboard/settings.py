@@ -137,8 +137,6 @@ EMAIL_HOST_USER = 'verifyaccesskey@gmail.com'
 EMAIL_HOST_PASSWORD = 'qreekjyonsvlattv'  
 DEFAULT_FROM_EMAIL = 'verifyaccesskey@gmail.com' 
 
-PASSWORD_RESET_TIMEOUT = 1800
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
