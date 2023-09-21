@@ -35,28 +35,22 @@ class Signup(APIView):
     def post(self, request):
         serializer = serializers.SignupSerializer(data=request.data)
         if serializer.is_valid():
-            first_name = serializer.validated_data.get('first_name')
-            last_name = serializer.validated_data.get('last_name')
-            username = serializer.validated_data.get('username')
-            email = serializer.validated_data.get('email')
-            raw_password = serializer.validated_data.get('password')
-            hashed_password = make_password(raw_password)
-            user_exists = models.User.objects.filter(username=username)
+            validated_data = serializer.validated_data
+            email = validated_data.get('email')
+            user_exists = models.User.objects.filter(email=email)
             if user_exists:
-                return Response({'error': 'user with this username already exists'}, status=status.HTTP_400_BAD_REQUEST)
-            # create a user instance
-            user = models.User(first_name=first_name, last_name=last_name, username=username, email=email, password=hashed_password)    
+                return Response({'error': 'user with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
             code = self.generate_code()
-            models.ConfirmationCode.objects.create(user=user, code=code)
-
+            confirmation_code = models.ConfirmationCode(email=email, code=code, user_details=validated_data)
+            confirmation_code.save()
             # send verification code to user's email
             subject = 'Signup Verification Code'
-            message = f"Hello {first_name} {last_name},\n\n"\
+            message = f"Hello {validated_data.get('first_name')} {validated_data.get('last_name')},\n\n"\
                       f"Your verification code is: {code}\n\n"
             from_email = settings.DEFAULT_FROM_EMAIL
             recipient_list = [email]
             send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-            return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code, 'user_id': user.id}, status=status.HTTP_201_CREATED)
+            return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CodeConfirmation(APIView):
@@ -64,11 +58,23 @@ class CodeConfirmation(APIView):
     permission_classes = []
     def post(self, request):
         code = request.data.get('code')
-        user_id = request.data.get('user_id')
-        email_verification = get_object_or_404(models.ConfirmationCode, user=user_id, code=code)
-        # save user to database
-        email_verification.user.save()
-        return Response({'messgae': 'Signup was successful'}, status=status.HTTP_200_OK)
+        email = request.data.get('email')
+        confirmation_code = get_object_or_404(models.ConfirmationCode, email=email)
+        if confirmation_code.is_verified:
+            return Response({'error': 'Code has already been used'}, status=status.HTTP_400_BAD_REQUEST)
+        hashed_password = make_password(confirmation_code.user_details['password'])
+        user = models.User(
+            first_name=confirmation_code.user_details['first_name'],
+            last_name=confirmation_code.user_details['last_name'],
+            username=confirmation_code.user_details['username'],
+            email=confirmation_code.user_details['email'],
+            password=hashed_password
+        )
+        user.save()
+        #mark the code as verified and delete it
+        confirmation_code.is_verified = True
+        confirmation_code.save()
+        return Response({'message': 'Signup was successful'}, status=status.HTTP_200_OK)
 
 class Login(APIView):
     authentication_classes = []
