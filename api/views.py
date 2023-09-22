@@ -60,7 +60,7 @@ class Signup(APIView):
             recipient_list = [email]
             try:
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-                return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code}, status=status.HTTP_201_CREATED)
+                return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code}, status=status.HTTP_200_OK)
             except Exception as e:
                 print(f"Email sending failed: {str(e)}")
                 return Response({'error': 'Email could not be sent'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -78,16 +78,14 @@ class CodeConfirmation(APIView):
         elif confirmation_code.code != code and confirmation_code.user_details['email'] == email:
             return Response({'error': 'invalid confirmation code'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            hashed_password = make_password(confirmation_code.user_details['password'])
             user = models.User(
                 first_name=confirmation_code.user_details['first_name'],
                 last_name=confirmation_code.user_details['last_name'],
                 username=confirmation_code.user_details['username'],
                 email=confirmation_code.user_details['email'],
-                password=hashed_password
+                password=confirmation_code.user_details['password']
             )
             user.save()
-            #mark the code as verified and delete it
             confirmation_code.is_verified = True
             confirmation_code.save()
             return Response({'message': 'Signup was successful'}, status=status.HTTP_200_OK)
