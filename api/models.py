@@ -8,7 +8,7 @@ class User(AbstractUser):
         return self.username
 
 class ConfirmationCode(models.Model):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(default='noemail@example.com')
     code = models.CharField(max_length=6)
     user_details = models.JSONField(null=True)
     is_verified = models.BooleanField(default=False)

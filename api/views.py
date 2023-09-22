@@ -58,8 +58,12 @@ class Signup(APIView):
                       f"Your verification code is: {code}\n\n"
             from_email = settings.DEFAULT_FROM_EMAIL
             recipient_list = [email]
-            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-            return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code}, status=status.HTTP_201_CREATED)
+            try:
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                return Response({'message': f'Your verification has been sent to {email}', 'verification_code': code}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                print(f"Email sending failed: {str(e)}")
+                return Response({'error': 'Email could not be sent'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CodeConfirmation(APIView):
