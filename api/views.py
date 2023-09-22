@@ -75,7 +75,9 @@ class CodeConfirmation(APIView):
         confirmation_code = get_object_or_404(models.ConfirmationCode, email=email)
         if confirmation_code.is_verified:
             return Response({'error': 'Code has already been used'}, status=status.HTTP_400_BAD_REQUEST)
-        elif confirmation_code.code == code and confirmation_code.user_details['email'] == email:
+        elif confirmation_code.code != code and confirmation_code.user_details['email'] == email:
+            return Response({'error': 'invalid confirmation code'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
             hashed_password = make_password(confirmation_code.user_details['password'])
             user = models.User(
                 first_name=confirmation_code.user_details['first_name'],
@@ -89,8 +91,6 @@ class CodeConfirmation(APIView):
             confirmation_code.is_verified = True
             confirmation_code.save()
             return Response({'message': 'Signup was successful'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'invalid confirmation code'}, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
     authentication_classes = []
