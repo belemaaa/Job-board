@@ -136,7 +136,6 @@ class FreelancerProfile(APIView):
         user = models.Freelancer.objects.get(user=self.request.user)
         freelancer_posts = models.Post.objects.filter(user=user)
         post_serializer = serializers.PostSerializer(freelancer_posts, many=True)
-
         profile_data = {
             'first_name': freelancer_profile.user.first_name,
             'last_name': freelancer_profile.user.last_name,
