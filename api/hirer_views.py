@@ -34,8 +34,6 @@ class HirerProfile(APIView):
         except models.Hirer.DoesNotExist:
             return Response({'error': 'hirer not found'}, status=status.HTTP_404_NOT_FOUND) 
         user = models.Hirer.objects.get(user=self.request.user)
-        # hirer_gigs = models.Gig.objects.filter(user=user)
-        # gig_serializer = serializers.GigSerializer(hirer_gigs, many=True)
         gig_list = models.Gig.objects.all()
         gigs_with_bids = []
         for gig in gig_list:
@@ -112,12 +110,4 @@ class Hirer_Gigs_Single(APIView):
         except models.Gig.DoesNotExist:
             return Response({'error': 'Gig not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# class GetAllGigs(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     def get(self, request):
-#         gigs_list = models.Gig.objects.all()
-#         serializer = serializers.GigSerializer(gigs_list, many=True)
-
-#         return Response({'data': serializer.data}, status=status.HTTP_200_OK)
     
