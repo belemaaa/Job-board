@@ -191,9 +191,17 @@ class Gig_Detail(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request, id):
-        queryset = models.Gig.objects.get(id=id)
-        serializer = serializers.GigSerializer(queryset, many=False)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+        gig = models.Gig.objects.get(id=id)
+        bids = gig.bid_set.all()
+        bid_count = bids.count()
+        bidders = [bid.bidder.user.username for bid in bids]
+        gig_serializer = serializers.GigSerializer(gig, many=False)
+        gig_data = {
+            'gig_details': gig_serializer.data,
+            'bid_count': bid_count,
+            'bidders': bidders,
+        }
+        return Response(gig_data, status=status.HTTP_200_OK)
     
 class Post(APIView):
     authentication_classes = [TokenAuthentication]
