@@ -5,14 +5,7 @@ from . import serializers
 from rest_framework.views import APIView
 from .authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
-from rest_framework.authtoken.models import Token
-import secrets
-from django.core.mail import send_mail
-from functools import reduce
-from operator import or_
-from django.db.models import Q
 
 class HirerProfile(APIView):
     authentication_classes = [TokenAuthentication]
