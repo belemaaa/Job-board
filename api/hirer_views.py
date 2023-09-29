@@ -87,20 +87,27 @@ class Gig(APIView):
 class Hirer_Gigs_Single(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    def get(self, request):
-        hirer = models.Hirer.objects.get(user=self.request.user)
-        queryset = models.Gig.objects.filter(user=hirer)
-        serializer = serializers.GigSerializer(queryset, many=True)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-     
-    def put(self, request, gig_id):
+    def get(self, request, id):
         try:
-            instance = models.Gig.objects.get(id=gig_id)
-            serializer = serializers.GigSerializer(instance, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'message': 'Gig has been updated.', 'data': serializer.data}, status=status.HTTP_200_OK)
-        except models.Gig.DoesNotExist:
-            return Response({'error': 'Gig not found'}, status=status.HTTP_404_NOT_FOUND)
+            hirer = models.Hirer.objects.get(user=id)
+            # queryset = models.Gig.objects.filter(user=hirer)
+            gig_list = models.Gig.objects.all()
+            gigs_with_bids = []
+            for gig in gig_list:
+                bids = gig.bid_set.all()
+                bid_count = bids.count()
+                bidders = [bid.bidder.user.username for bid in bids]
+                bid_messages = [bid.message for bid in bids]
+                gig_serializer = serializers.GigSerializer(gig)
+                gig_data = {
+                    'gig': gig_serializer.data,
+                    'bid_count': bid_count,
+                    'bidders': bidders,
+                    'bid_messages': bid_messages
+                }
+                gigs_with_bids.append(gig_data)
+                return Response(gigs_with_bids, status=status.HTTP_200_OK)
+        except models.Hirer.DoesNotExist:
+            return Response({'error': 'Hirer instance not found'}, status=status.HTTP_404_NOT_FOUND)
 
     
