@@ -12,10 +12,18 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 class GigSerializer(serializers.ModelSerializer):
-    owner_id = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = models.Gig
-        fields = ['owner_id', 'role', 'gig_description', 'gig_requirements', 'created_at']
+        fields = ['owner', 'id', 'role', 'gig_description', 'gig_requirements', 'created_at']
+    def get_owner(self, obj):
+        return {
+            'user_id': obj.user.user.id,
+            'first_name': obj.user.user.first_name,
+            'last_name': obj.user.user.last_name,
+            'username': obj.user.user.username,
+            'email': obj.user.user.email,
+        }
     
     def get_owner_id(self, obj):
         return obj.id

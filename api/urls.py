@@ -24,5 +24,5 @@ urlpatterns = [
     path('gigs/create/', hv.Gig.as_view()),
     path('gigs/update/<int:gig_id>/', hv.Gig.as_view()),
     path('gigs/delete/<int:gig_id>/', hv.Gig.as_view()),
-    path('gigs/personal/', hv.Hirer_Gigs_Single.as_view())
+    path('gigs/personal/<int:id>/', hv.Hirer_Gigs_Single.as_view())
 ]

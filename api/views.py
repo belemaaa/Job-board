@@ -159,7 +159,7 @@ class ViewGigs(APIView):
             bidders = [bid.bidder.user.username for bid in bids]
             gig_serializer = serializers.GigSerializer(gig)  # serialize the gig object
             gig_data = {
-                'gig': gig_serializer.data,
+                'gig_details': gig_serializer.data,
                 'bid_count': bid_count,
                 'bidders': bidders,
             }
