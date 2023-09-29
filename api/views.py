@@ -212,7 +212,7 @@ class Post(APIView):
             content = serializer.validated_data.get('content') or None
             if content is None:
                 content = ''
-            # retrieve the Freelancer instance associated with the authenticated user
+            # retrieve the freelancer instance associated with the authenticated user
             user = models.Freelancer.objects.get(user=self.request.user)
             image = request.data.get('image')
             if image:
@@ -282,7 +282,7 @@ class Save_Gig(APIView):
             return Response({'message': 'gig saved successfully.'}, status=status.HTTP_201_CREATED)
         else:
             return Response({'message': 'gig is already saved to your collection.'}, status=status.HTTP_200_OK)    
-    # retrieve saved gigs
+    # retrieve gigs saved to collection
     def get(self, request):
         user = models.Freelancer.objects.get(user=self.request.user)
         saved_gigs = models.SavedGig.objects.get(user=user)
