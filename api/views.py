@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-import secrets
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -30,6 +29,7 @@ cloudinary.config(
 class Signup(APIView):
     authentication_classes = []
     permission_classes = []
+    # Generate 6-digit confirmation code
     def generate_code(self):
         return str(random.randint(100000, 999999))
     def post(self, request):
@@ -119,7 +119,6 @@ class FreelancerProfile(APIView):
         if serializer.is_valid():
             user = request.user
             freelancer, created = models.Freelancer.objects.get_or_create(user=user)
-
             freelancer.field = serializer.validated_data.get('field')
             freelancer.qualifications = serializer.validated_data.get('qualifications')
             freelancer.save()
